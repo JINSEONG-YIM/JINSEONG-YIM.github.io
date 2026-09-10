@@ -1,0 +1,2019 @@
+<!doctype html>
+<html lang="ko" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>The Old 메뉴</title>
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        padding-top: 60px;
+        padding-bottom: 180px;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+      }
+
+      /* 다크 모드 대응을 위해 색상을 Bootstrap CSS 변수로 변경 */
+      .top-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--bs-body-bg);
+        padding: 10px 15px;
+        z-index: 1030;
+        border-bottom: 1px solid var(--bs-border-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
+      }
+
+      .bottom-search-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--bs-body-bg);
+        padding: 15px 15px calc(15px + env(safe-area-inset-bottom));
+        z-index: 1000;
+        border-top: 1px solid var(--bs-border-color);
+        box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
+      }
+
+      .horizontal-scroll {
+        overflow-x: auto;
+        white-space: nowrap;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .horizontal-scroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      .menu-card {
+        margin-bottom: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--bs-border-color-translucent);
+        background-color: var(--bs-body-bg);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
+      }
+
+      .price-badge {
+        font-size: 1.05rem;
+        font-weight: 600;
+      }
+      .tag-badge {
+        font-size: 0.7rem;
+        margin-right: 4px;
+        margin-bottom: 4px;
+        display: inline-block;
+      }
+      .unit-badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+      }
+
+      .offcanvas-footer {
+        border-top: 1px solid var(--bs-border-color);
+        background-color: var(--bs-tertiary-bg);
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
+      }
+    </style>
+  </head>
+  <body class="bg-body-tertiary">
+    <div class="top-header">
+      <h5 class="m-0 fw-bold">The Old</h5>
+      <div class="d-flex align-items-center">
+        <!-- 다크 모드 토글 버튼 -->
+        <button
+          class="btn btn-outline-secondary rounded-pill py-1 px-2 me-2"
+          id="darkModeToggle"
+          style="font-size: 0.9rem"
+        >
+          🌙
+        </button>
+        <!-- 계산기 장바구니 버튼 -->
+        <button
+          class="btn btn-primary rounded-pill shadow-sm py-1 px-3"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#cartOffcanvas"
+        >
+          계산기 🛒
+          <span id="cartTotalBadge" class="badge bg-danger ms-1">₩0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="container" id="menuList"></div>
+
+    <div class="bottom-search-container">
+      <div class="container p-0">
+        <!-- 단위 다중 선택 필터 (전체 형태 삭제) -->
+        <div class="horizontal-scroll mb-2 d-flex gap-2" id="unitContainer">
+          <button
+            class="btn btn-outline-secondary btn-sm rounded-pill"
+            data-unit="Single"
+          >
+            Single (잔/단품)
+          </button>
+          <button
+            class="btn btn-outline-secondary btn-sm rounded-pill"
+            data-unit="Bottle"
+          >
+            Bottle (바틀)
+          </button>
+          <button
+            class="btn btn-outline-secondary btn-sm rounded-pill"
+            data-unit="Set"
+          >
+            Set (세트)
+          </button>
+        </div>
+        <!-- 카테고리 단일 선택 필터 -->
+        <div class="horizontal-scroll mb-2 d-flex gap-2" id="categoryContainer">
+          <button
+            class="btn btn-primary btn-sm rounded-pill active"
+            data-category="all"
+          >
+            전체 메뉴
+          </button>
+          <button
+            class="btn btn-outline-primary btn-sm rounded-pill"
+            data-category="위스키"
+          >
+            위스키
+          </button>
+          <button
+            class="btn btn-outline-primary btn-sm rounded-pill"
+            data-category="브랜디&데킬라"
+          >
+            브랜디/데킬라
+          </button>
+          <button
+            class="btn btn-outline-primary btn-sm rounded-pill"
+            data-category="와인"
+          >
+            와인
+          </button>
+          <button
+            class="btn btn-outline-primary btn-sm rounded-pill"
+            data-category="맥주"
+          >
+            맥주
+          </button>
+          <button
+            class="btn btn-outline-primary btn-sm rounded-pill"
+            data-category="칵테일"
+          >
+            칵테일
+          </button>
+          <button
+            class="btn btn-outline-primary btn-sm rounded-pill"
+            data-category="안주"
+          >
+            안주
+          </button>
+          <button
+            class="btn btn-outline-danger btn-sm rounded-pill"
+            data-category="이벤트"
+          >
+            이벤트 프로모션
+          </button>
+        </div>
+        <!-- 검색 인풋창 -->
+        <input
+          type="text"
+          id="searchInput"
+          class="form-control form-control-lg bg-body"
+          placeholder="메뉴명, 영문, 초성 검색"
+          autocomplete="off"
+        />
+      </div>
+    </div>
+
+    <!-- 장바구니 모달 -->
+    <div
+      class="offcanvas offcanvas-bottom"
+      tabindex="-1"
+      id="cartOffcanvas"
+      style="
+        height: 75vh;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+      "
+    >
+      <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title fw-bold">주문 계산기</h5>
+        <div>
+          <button
+            class="btn btn-sm btn-outline-danger me-2"
+            onclick="clearCart()"
+          >
+            전체 삭제
+          </button>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+      <div class="offcanvas-body" id="cartItems"></div>
+      <div
+        class="offcanvas-footer p-3 d-flex justify-content-between align-items-center"
+      >
+        <span class="fs-5 fw-bold">총 합계액</span>
+        <span class="fs-3 fw-bold text-primary" id="cartTotal">₩0</span>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // --- 다크 모드 토글 로직 ---
+      const darkModeToggle = document.getElementById("darkModeToggle");
+      const htmlElement = document.documentElement;
+      let isDarkMode = false;
+
+      darkModeToggle.addEventListener("click", () => {
+        isDarkMode = !isDarkMode;
+        if (isDarkMode) {
+          htmlElement.setAttribute("data-bs-theme", "dark");
+          darkModeToggle.innerText = "☀️";
+        } else {
+          htmlElement.setAttribute("data-bs-theme", "light");
+          darkModeToggle.innerText = "🌙";
+        }
+      });
+
+      // 한글 초성 추출기
+      function getChosung(str) {
+        const chosungList = [
+          "ㄱ",
+          "ㄲ",
+          "ㄴ",
+          "ㄷ",
+          "ㄸ",
+          "ㄹ",
+          "ㅁ",
+          "ㅂ",
+          "ㅃ",
+          "ㅅ",
+          "ㅆ",
+          "ㅇ",
+          "ㅈ",
+          "ㅉ",
+          "ㅊ",
+          "ㅋ",
+          "ㅌ",
+          "ㅍ",
+          "ㅎ",
+        ];
+        let result = "";
+        for (let i = 0; i < str.length; i++) {
+          const code = str.charCodeAt(i);
+          if (code >= 0xac00 && code <= 0xd7a3) {
+            result += chosungList[Math.floor((code - 0xac00) / 588)];
+          } else {
+            result += str[i];
+          }
+        }
+        return result.toLowerCase().replace(/\s/g, "");
+      }
+
+      // 전체 메뉴 데이터
+      const rawMenuData = [
+        {
+          name: "조니워커 세트 (이벤트)",
+          eng: "Johnnie Walker Set",
+          category: "이벤트",
+          price: "50,000",
+          unit: "Set",
+          tags: ["이벤트", "조니워커"],
+        },
+        {
+          name: "기네스 세트 (이벤트)",
+          eng: "Guiness Set",
+          category: "이벤트",
+          price: "50,000",
+          unit: "Set",
+          tags: ["이벤트", "기네스"],
+        },
+
+        {
+          name: "아벨라워 14년",
+          eng: "Aberlour 14y",
+          category: "위스키",
+          price: "37,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "발베니 12년 더블우드",
+          eng: "Balvenie 12y Double Wood",
+          category: "위스키",
+          price: "21,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "발베니 12년 더블우드",
+          eng: "Balvenie 12y Double Wood",
+          category: "위스키",
+          price: "350,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "발베니 14년 캐리비안 캐스크",
+          eng: "Balvenie 14y Caribbean Cask",
+          category: "위스키",
+          price: "30,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "발베니 14년 캐리비안 캐스크",
+          eng: "Balvenie 14y Caribbean Cask",
+          category: "위스키",
+          price: "480,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "발베니 14년 더 위크 오브 피트",
+          eng: "Balvenie 14y The Week of Peat",
+          category: "위스키",
+          price: "38,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트", "피트"],
+        },
+        {
+          name: "발베니 14년 더 위크 오브 피트",
+          eng: "Balvenie 14y The Week of Peat",
+          category: "위스키",
+          price: "520,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트", "피트"],
+        },
+        {
+          name: "발베니 21년 포트 우드",
+          eng: "Balvenie 21y Port Wood",
+          category: "위스키",
+          price: "92,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌피딕 12년",
+          eng: "Glenfiddich 12y",
+          category: "위스키",
+          price: "17,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌피딕 12년",
+          eng: "Glenfiddich 12y",
+          category: "위스키",
+          price: "280,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌피딕 12년 쉐리",
+          eng: "Glenfiddich 12y Sherry",
+          category: "위스키",
+          price: "19,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌피딕 12년 쉐리",
+          eng: "Glenfiddich 12y Sherry",
+          category: "위스키",
+          price: "320,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌피딕 15년",
+          eng: "Glenfiddich 15y",
+          category: "위스키",
+          price: "24,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌피딕 15년",
+          eng: "Glenfiddich 15y",
+          category: "위스키",
+          price: "400,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌피딕 18년",
+          eng: "Glenfiddich 18y",
+          category: "위스키",
+          price: "41,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌피딕 18년",
+          eng: "Glenfiddich 18y",
+          category: "위스키",
+          price: "680,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌리벳 15년",
+          eng: "Glenlivet 15y",
+          category: "위스키",
+          price: "26,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌리벳 15년",
+          eng: "Glenlivet 15y",
+          category: "위스키",
+          price: "440,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌리벳 18년",
+          eng: "Glenlivet 18y",
+          category: "위스키",
+          price: "43,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "글렌리벳 18년",
+          eng: "Glenlivet 18y",
+          category: "위스키",
+          price: "720,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "맥켈란 12년 더블 캐스크",
+          eng: "Macallan 12y Double Cask",
+          category: "위스키",
+          price: "21,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "맥켈란 12년 더블 캐스크",
+          eng: "Macallan 12y Double Cask",
+          category: "위스키",
+          price: "350,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "맥켈란 12년 쉐리 캐스크",
+          eng: "Macallan 12y Sherry Cask",
+          category: "위스키",
+          price: "23,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "맥켈란 12년 쉐리 캐스크",
+          eng: "Macallan 12y Sherry Cask",
+          category: "위스키",
+          price: "390,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "맥켈란 15년 더블 캐스크",
+          eng: "Macallan 15y Double Cask",
+          category: "위스키",
+          price: "35,000",
+          unit: "Single",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "맥켈란 15년 더블 캐스크",
+          eng: "Macallan 15y Double Cask",
+          category: "위스키",
+          price: "660,000",
+          unit: "Bottle",
+          tags: ["스페이사이드", "싱글몰트"],
+        },
+        {
+          name: "달모어 12년 쉐리",
+          eng: "Dalmore 12y Sherry",
+          category: "위스키",
+          price: "29,000",
+          unit: "Single",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "달모어 12년 쉐리",
+          eng: "Dalmore 12y Sherry",
+          category: "위스키",
+          price: "470,000",
+          unit: "Bottle",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "달모어 15년",
+          eng: "Dalmore 15y",
+          category: "위스키",
+          price: "44,000",
+          unit: "Single",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "달모어 15년",
+          eng: "Dalmore 15y",
+          category: "위스키",
+          price: "730,000",
+          unit: "Bottle",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "글렌모렌지 12년 오리지널",
+          eng: "Glenmorangie 12y Original",
+          category: "위스키",
+          price: "15,000",
+          unit: "Single",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "글렌모렌지 12년 오리지널",
+          eng: "Glenmorangie 12y Original",
+          category: "위스키",
+          price: "240,000",
+          unit: "Bottle",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "글렌모렌지 14년 퀀타루반",
+          eng: "Glenmorangie 14y Quinta Ruban",
+          category: "위스키",
+          price: "23,000",
+          unit: "Single",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "글렌모렌지 14년 퀀타루반",
+          eng: "Glenmorangie 14y Quinta Ruban",
+          category: "위스키",
+          price: "350,000",
+          unit: "Bottle",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "글렌모렌지 15년 라산타",
+          eng: "Glenmorangie 15y Lasanta",
+          category: "위스키",
+          price: "26,000",
+          unit: "Single",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "글렌모렌지 15년 라산타",
+          eng: "Glenmorangie 15y Lasanta",
+          category: "위스키",
+          price: "420,000",
+          unit: "Bottle",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "글렌모렌지 시그넷",
+          eng: "Glenmorangie Signet",
+          category: "위스키",
+          price: "65,000",
+          unit: "Single",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "글렌모렌지 시그넷",
+          eng: "Glenmorangie Signet",
+          category: "위스키",
+          price: "950,000",
+          unit: "Bottle",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "오반 14년",
+          eng: "Oban 14y",
+          category: "위스키",
+          price: "25,000",
+          unit: "Single",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "오반 14년",
+          eng: "Oban 14y",
+          category: "위스키",
+          price: "420,000",
+          unit: "Bottle",
+          tags: ["하이랜드", "싱글몰트"],
+        },
+        {
+          name: "탈리스커 10년",
+          eng: "Talisker 10y",
+          category: "위스키",
+          price: "17,000",
+          unit: "Single",
+          tags: ["아일라", "스카이", "피트"],
+        },
+        {
+          name: "탈리스커 10년",
+          eng: "Talisker 10y",
+          category: "위스키",
+          price: "280,000",
+          unit: "Bottle",
+          tags: ["아일라", "스카이", "피트"],
+        },
+        {
+          name: "아드벡 10년",
+          eng: "Ardbeg 10y",
+          category: "위스키",
+          price: "20,000",
+          unit: "Single",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "아드벡 10년",
+          eng: "Ardbeg 10y",
+          category: "위스키",
+          price: "330,000",
+          unit: "Bottle",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "아드벡 우거달",
+          eng: "Ardbeg Uigeadil",
+          category: "위스키",
+          price: "31,000",
+          unit: "Single",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "아드벡 우거달",
+          eng: "Ardbeg Uigeadil",
+          category: "위스키",
+          price: "500,000",
+          unit: "Bottle",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "아드벡 코리브레칸",
+          eng: "Ardbeg Corryvreckan",
+          category: "위스키",
+          price: "37,000",
+          unit: "Single",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "아드벡 코리브레칸",
+          eng: "Ardbeg Corryvreckan",
+          category: "위스키",
+          price: "620,000",
+          unit: "Bottle",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "보모어 12년",
+          eng: "Bowmore 12y",
+          category: "위스키",
+          price: "17,000",
+          unit: "Single",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "보모어 12년",
+          eng: "Bowmore 12y",
+          category: "위스키",
+          price: "280,000",
+          unit: "Bottle",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "라프로익 10년",
+          eng: "Laphroaig 10y",
+          category: "위스키",
+          price: "17,000",
+          unit: "Single",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "라프로익 10년",
+          eng: "Laphroaig 10y",
+          category: "위스키",
+          price: "280,000",
+          unit: "Bottle",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "라가불린 16년",
+          eng: "Lagavulin 16y",
+          category: "위스키",
+          price: "36,000",
+          unit: "Single",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "라가불린 16년",
+          eng: "Lagavulin 16y",
+          category: "위스키",
+          price: "600,000",
+          unit: "Bottle",
+          tags: ["아일라", "피트"],
+        },
+        {
+          name: "야마자키 DR",
+          eng: "Yamazaki DR",
+          category: "위스키",
+          price: "33,000",
+          unit: "Single",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "야마자키 DR",
+          eng: "Yamazaki DR",
+          category: "위스키",
+          price: "540,000",
+          unit: "Bottle",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "야마자키 12년",
+          eng: "Yamazaki 12y",
+          category: "위스키",
+          price: "57,000",
+          unit: "Single",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "야마자키 12년",
+          eng: "Yamazaki 12y",
+          category: "위스키",
+          price: "860,000",
+          unit: "Bottle",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "하쿠슈 DR",
+          eng: "Hakushu DR",
+          category: "위스키",
+          price: "27,000",
+          unit: "Single",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "하쿠슈 DR",
+          eng: "Hakushu DR",
+          category: "위스키",
+          price: "450,000",
+          unit: "Bottle",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "하쿠슈 12년",
+          eng: "Hakushu 12y",
+          category: "위스키",
+          price: "55,000",
+          unit: "Single",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "하쿠슈 12년",
+          eng: "Hakushu 12y",
+          category: "위스키",
+          price: "850,000",
+          unit: "Bottle",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "히비키 재패니즈 하모니",
+          eng: "Hibiki Japanese Harmony",
+          category: "위스키",
+          price: "29,000",
+          unit: "Single",
+          tags: ["재패니즈", "블렌디드"],
+        },
+        {
+          name: "히비키 재패니즈 하모니",
+          eng: "Hibiki Japanese Harmony",
+          category: "위스키",
+          price: "480,000",
+          unit: "Bottle",
+          tags: ["재패니즈", "블렌디드"],
+        },
+        {
+          name: "닛카 요이치",
+          eng: "Nikka Yoichi",
+          category: "위스키",
+          price: "25,000",
+          unit: "Single",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "닛카 요이치",
+          eng: "Nikka Yoichi",
+          category: "위스키",
+          price: "350,000",
+          unit: "Bottle",
+          tags: ["재패니즈"],
+        },
+        {
+          name: "카발란 트리플 쉐리 캐스크",
+          eng: "Kavalan Triple Sherry Cask",
+          category: "위스키",
+          price: "32,000",
+          unit: "Single",
+          tags: ["타이완", "쉐리"],
+        },
+        {
+          name: "카발란 트리플 쉐리 캐스크",
+          eng: "Kavalan Triple Sherry Cask",
+          category: "위스키",
+          price: "580,000",
+          unit: "Bottle",
+          tags: ["타이완", "쉐리"],
+        },
+        {
+          name: "기원 호랑이",
+          eng: "Ki One Tiger",
+          category: "위스키",
+          price: "20,000",
+          unit: "Single",
+          tags: ["코리안", "한국"],
+        },
+        {
+          name: "기원 호랑이",
+          eng: "Ki One Tiger",
+          category: "위스키",
+          price: "320,000",
+          unit: "Bottle",
+          tags: ["코리안", "한국"],
+        },
+        {
+          name: "블랑톤 싱글배럴",
+          eng: "Blanton’s Single Barrel",
+          category: "위스키",
+          price: "47,000",
+          unit: "Single",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "블랑톤 싱글배럴",
+          eng: "Blanton’s Single Barrel",
+          category: "위스키",
+          price: "720,000",
+          unit: "Bottle",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "러셀 싱글배럴",
+          eng: "Russell’s Single Barrell",
+          category: "위스키",
+          price: "20,000",
+          unit: "Single",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "러셀 싱글배럴",
+          eng: "Russell’s Single Barrell",
+          category: "위스키",
+          price: "330,000",
+          unit: "Bottle",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "와일드터키 8년",
+          eng: "Wild Turkey 101 8y",
+          category: "위스키",
+          price: "15,000",
+          unit: "Single",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "와일드터키 8년",
+          eng: "Wild Turkey 101 8y",
+          category: "위스키",
+          price: "200,000",
+          unit: "Bottle",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "와일드터키 라이",
+          eng: "Wild Turkey Rye",
+          category: "위스키",
+          price: "15,000",
+          unit: "Single",
+          tags: ["라이", "아메리칸"],
+        },
+        {
+          name: "와일드터키 라이",
+          eng: "Wild Turkey Rye",
+          category: "위스키",
+          price: "200,000",
+          unit: "Bottle",
+          tags: ["라이", "아메리칸"],
+        },
+        {
+          name: "와일드터키 레어브리드",
+          eng: "Wild Turkey Rare Breed",
+          category: "위스키",
+          price: "19,000",
+          unit: "Single",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "와일드터키 레어브리드",
+          eng: "Wild Turkey Rare Breed",
+          category: "위스키",
+          price: "310,000",
+          unit: "Bottle",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "메이커스 마크",
+          eng: "Maker’s Mark",
+          category: "위스키",
+          price: "15,000",
+          unit: "Single",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "메이커스 마크",
+          eng: "Maker’s Mark",
+          category: "위스키",
+          price: "200,000",
+          unit: "Bottle",
+          tags: ["버번", "아메리칸"],
+        },
+        {
+          name: "발렌타인 17년",
+          eng: "Ballantine's 17y",
+          category: "위스키",
+          price: "32,000",
+          unit: "Single",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "발렌타인 17년",
+          eng: "Ballantine's 17y",
+          category: "위스키",
+          price: "580,000",
+          unit: "Bottle",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "시바스 리갈 18년",
+          eng: "Chivas Regal 18y",
+          category: "위스키",
+          price: "35,000",
+          unit: "Single",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "올드파 12년",
+          eng: "Old Parr 12y",
+          category: "위스키",
+          price: "15,000",
+          unit: "Single",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "올드파 12년",
+          eng: "Old Parr 12y",
+          category: "위스키",
+          price: "200,000",
+          unit: "Bottle",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "조니워커 블랙 라벨",
+          eng: "Johnnie Walker Black",
+          category: "위스키",
+          price: "15,000",
+          unit: "Single",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "조니워커 블랙 라벨",
+          eng: "Johnnie Walker Black",
+          category: "위스키",
+          price: "200,000",
+          unit: "Bottle",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "조니워커 블랙 루비",
+          eng: "Johnnie Walker Black Ruby",
+          category: "위스키",
+          price: "17,000",
+          unit: "Single",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "조니워커 블랙 루비",
+          eng: "Johnnie Walker Black Ruby",
+          category: "위스키",
+          price: "230,000",
+          unit: "Bottle",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "조니워커 블루 라벨",
+          eng: "Johnnie Walker Blue",
+          category: "위스키",
+          price: "58,000",
+          unit: "Single",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "조니워커 블루 라벨",
+          eng: "Johnnie Walker Blue",
+          category: "위스키",
+          price: "890,000",
+          unit: "Bottle",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "로얄 살루트 21년",
+          eng: "Royal Salute 21y",
+          category: "위스키",
+          price: "56,000",
+          unit: "Single",
+          tags: ["블렌디드"],
+        },
+        {
+          name: "로얄 살루트 21년",
+          eng: "Royal Salute 21y",
+          category: "위스키",
+          price: "850,000",
+          unit: "Bottle",
+          tags: ["블렌디드"],
+        },
+
+        {
+          name: "헤네시 VSOP",
+          eng: "Hennessy VSOP",
+          category: "브랜디&데킬라",
+          price: "20,000",
+          unit: "Single",
+          tags: ["꼬냑", "브랜디"],
+        },
+        {
+          name: "헤네시 VSOP",
+          eng: "Hennessy VSOP",
+          category: "브랜디&데킬라",
+          price: "320,000",
+          unit: "Bottle",
+          tags: ["꼬냑", "브랜디"],
+        },
+        {
+          name: "헤네시 XO",
+          eng: "Hennessy XO",
+          category: "브랜디&데킬라",
+          price: "60,000",
+          unit: "Single",
+          tags: ["꼬냑", "브랜디"],
+        },
+        {
+          name: "헤네시 XO",
+          eng: "Hennessy XO",
+          category: "브랜디&데킬라",
+          price: "970,000",
+          unit: "Bottle",
+          tags: ["꼬냑", "브랜디"],
+        },
+        {
+          name: "레미마틴 VSOP",
+          eng: "Reny Martin VSOP",
+          category: "브랜디&데킬라",
+          price: "22,000",
+          unit: "Single",
+          tags: ["꼬냑", "브랜디"],
+        },
+        {
+          name: "레미마틴 VSOP",
+          eng: "Reny Martin VSOP",
+          category: "브랜디&데킬라",
+          price: "350,000",
+          unit: "Bottle",
+          tags: ["꼬냑", "브랜디"],
+        },
+        {
+          name: "까뮤 XO",
+          eng: "Camus XO",
+          category: "브랜디&데킬라",
+          price: "58,000",
+          unit: "Single",
+          tags: ["꼬냑", "브랜디"],
+        },
+        {
+          name: "까뮤 XO",
+          eng: "Camus XO",
+          category: "브랜디&데킬라",
+          price: "950,000",
+          unit: "Bottle",
+          tags: ["꼬냑", "브랜디"],
+        },
+        {
+          name: "돈 훌리오 블랑코",
+          eng: "Don Julio Blanco",
+          category: "브랜디&데킬라",
+          price: "18,000",
+          unit: "Single",
+          tags: ["데킬라"],
+        },
+        {
+          name: "돈 훌리오 블랑코",
+          eng: "Don Julio Blanco",
+          category: "브랜디&데킬라",
+          price: "290,000",
+          unit: "Bottle",
+          tags: ["데킬라"],
+        },
+        {
+          name: "호세 쿠엘보 아네호 1800",
+          eng: "Jose Cuervo Anejo 1800",
+          category: "브랜디&데킬라",
+          price: "20,000",
+          unit: "Single",
+          tags: ["데킬라"],
+        },
+        {
+          name: "호세 쿠엘보 아네호 1800",
+          eng: "Jose Cuervo Anejo 1800",
+          category: "브랜디&데킬라",
+          price: "310,000",
+          unit: "Bottle",
+          tags: ["데킬라"],
+        },
+        {
+          name: "패트론 실버",
+          eng: "Patron Silver",
+          category: "브랜디&데킬라",
+          price: "23,000",
+          unit: "Single",
+          tags: ["데킬라"],
+        },
+        {
+          name: "패트론 실버",
+          eng: "Patron Silver",
+          category: "브랜디&데킬라",
+          price: "380,000",
+          unit: "Bottle",
+          tags: ["데킬라"],
+        },
+        {
+          name: "마드레 에스파딘",
+          eng: "Madre Espadin",
+          category: "브랜디&데킬라",
+          price: "15,000",
+          unit: "Single",
+          tags: ["메스칼"],
+        },
+        {
+          name: "마드레 에스파딘",
+          eng: "Madre Espadin",
+          category: "브랜디&데킬라",
+          price: "240,000",
+          unit: "Bottle",
+          tags: ["메스칼"],
+        },
+
+        // 와인 (다중 Unit)
+        {
+          name: "루이 자도, 부르고뉴 샤르도네",
+          eng: "Louis Jadot, Bourgogne Chardonnay",
+          category: "와인",
+          price: "160,000",
+          unit: "Set",
+          tags: ["화이트와인"],
+        },
+        {
+          name: "루이 자도, 부르고뉴 샤르도네 (단품)",
+          eng: "Louis Jadot (Bottle Only)",
+          category: "와인",
+          price: "140,000",
+          unit: ["Single", "Bottle"],
+          tags: ["화이트와인"],
+        },
+        {
+          name: "킴 크로포드, 말보로 소비뇽 블랑",
+          eng: "Kim Crawford, Marlborough Sauvignon Blanc",
+          category: "와인",
+          price: "110,000",
+          unit: "Set",
+          tags: ["화이트와인"],
+        },
+        {
+          name: "킴 크로포드, 말보로 소비뇽 블랑 (단품)",
+          eng: "Kim Crawford (Bottle Only)",
+          category: "와인",
+          price: "90,000",
+          unit: ["Single", "Bottle"],
+          tags: ["화이트와인"],
+        },
+        {
+          name: "러시안 잭, 소비뇽 블랑",
+          eng: "Russian Jack, Sauvignon Blanc",
+          category: "와인",
+          price: "80,000",
+          unit: "Set",
+          tags: ["화이트와인"],
+        },
+        {
+          name: "러시안 잭, 소비뇽 블랑 (단품)",
+          eng: "Russian Jack (Bottle Only)",
+          category: "와인",
+          price: "60,000",
+          unit: ["Single", "Bottle"],
+          tags: ["화이트와인"],
+        },
+        {
+          name: "모엣 샹동",
+          eng: "Moet & Chandon",
+          category: "와인",
+          price: "220,000",
+          unit: "Set",
+          tags: ["스파클링", "샴페인"],
+        },
+        {
+          name: "모엣 샹동 (단품)",
+          eng: "Moet & Chandon (Bottle Only)",
+          category: "와인",
+          price: "200,000",
+          unit: ["Single", "Bottle"],
+          tags: ["스파클링", "샴페인"],
+        },
+        {
+          name: "도멘 생 미쉘, 브뤼",
+          eng: "Domaine Ste. Michelle, Brut",
+          category: "와인",
+          price: "120,000",
+          unit: "Set",
+          tags: ["스파클링"],
+        },
+        {
+          name: "도멘 생 미쉘, 브뤼 (단품)",
+          eng: "Domaine Ste. Michelle (Bottle Only)",
+          category: "와인",
+          price: "100,000",
+          unit: ["Single", "Bottle"],
+          tags: ["스파클링"],
+        },
+        {
+          name: "엠엠 까바 셀렉션 이스페셜, 브뤼",
+          eng: "MM Selección Especial Cava, Brut",
+          category: "와인",
+          price: "80,000",
+          unit: "Set",
+          tags: ["스파클링", "까바"],
+        },
+        {
+          name: "엠엠 까바 셀렉션 이스페셜 (단품)",
+          eng: "MM Selección (Bottle Only)",
+          category: "와인",
+          price: "60,000",
+          unit: ["Single", "Bottle"],
+          tags: ["스파클링", "까바"],
+        },
+        {
+          name: "운두라가 드미 섹",
+          eng: "Undurraga, Demi Sec",
+          category: "와인",
+          price: "80,000",
+          unit: "Set",
+          tags: ["스파클링"],
+        },
+        {
+          name: "운두라가 드미 섹 (단품)",
+          eng: "Undurraga (Bottle Only)",
+          category: "와인",
+          price: "60,000",
+          unit: ["Single", "Bottle"],
+          tags: ["스파클링"],
+        },
+
+        {
+          name: "生 기네스 드래프트 (360ml)",
+          eng: "Guiness Draft",
+          category: "맥주",
+          price: "13,000",
+          unit: "Single",
+          tags: ["생맥주", "흑맥주", "4.2%"],
+        },
+        {
+          name: "기네스 병맥주",
+          eng: "Guiness",
+          category: "맥주",
+          price: "13,000",
+          unit: "Single",
+          tags: ["병맥주", "흑맥주", "4.2%"],
+        },
+        {
+          name: "코젤 (500ml)",
+          eng: "Kozel",
+          category: "맥주",
+          price: "15,000",
+          unit: "Single",
+          tags: ["병맥주", "흑맥주", "3.8%"],
+        },
+        {
+          name: "사무엘 아담스",
+          eng: "Samuel Adams",
+          category: "맥주",
+          price: "13,000",
+          unit: "Single",
+          tags: ["병맥주", "라거", "5%"],
+        },
+        {
+          name: "아사히 / 삿포로",
+          eng: "Asahi / Sapporo",
+          category: "맥주",
+          price: "13,000",
+          unit: "Single",
+          tags: ["병맥주", "라거", "5%"],
+        },
+        {
+          name: "코로나",
+          eng: "Corona",
+          category: "맥주",
+          price: "13,000",
+          unit: "Single",
+          tags: ["병맥주", "라거", "4.5%"],
+        },
+        {
+          name: "블루문",
+          eng: "Blue Moon",
+          category: "맥주",
+          price: "14,000",
+          unit: "Single",
+          tags: ["병맥주", "밀맥주", "5.4%"],
+        },
+        {
+          name: "인디카 IPA",
+          eng: "Indica IPA",
+          category: "맥주",
+          price: "14,000",
+          unit: "Single",
+          tags: ["병맥주", "에일", "6.5%"],
+        },
+        {
+          name: "라거 맥주 세트 (5병 + 스낵)",
+          eng: "Larger Set",
+          category: "맥주",
+          price: "75,000",
+          unit: "Set",
+          tags: ["병맥주세트"],
+        },
+        {
+          name: "에일 & 밀맥주 세트 (5병 + 스낵)",
+          eng: "Ale & Wheat Set",
+          category: "맥주",
+          price: "80,000",
+          unit: "Set",
+          tags: ["병맥주세트"],
+        },
+        {
+          name: "코젤 맥주 세트 (5병 + 스낵)",
+          eng: "Kozel Set",
+          category: "맥주",
+          price: "85,000",
+          unit: "Set",
+          tags: ["병맥주세트"],
+        },
+
+        {
+          name: "디올드 시그니처",
+          eng: "The Old Signature",
+          category: "칵테일",
+          price: "25,000",
+          unit: "Single",
+          tags: ["시그니처", "브랜디", "카카오", "17%"],
+        },
+        {
+          name: "멜론 소다",
+          eng: "Melon Soda",
+          category: "칵테일",
+          price: "23,000",
+          unit: "Single",
+          tags: ["시그니처", "보드카", "럼", "12%"],
+        },
+        {
+          name: "갓파더",
+          eng: "Godfather",
+          category: "칵테일",
+          price: "20,000",
+          unit: "Single",
+          tags: ["클래식", "스카치", "아마레또", "33%"],
+        },
+        {
+          name: "네그로니",
+          eng: "Negroni",
+          category: "칵테일",
+          price: "21,000",
+          unit: "Single",
+          tags: ["클래식", "진", "캄파리", "27%"],
+        },
+        {
+          name: "블랙 러시안",
+          eng: "Black Russian",
+          category: "칵테일",
+          price: "18,000",
+          unit: "Single",
+          tags: ["클래식", "보드카", "커피리큐르", "31%"],
+        },
+        {
+          name: "올드 패션드",
+          eng: "Old-Fashioned",
+          category: "칵테일",
+          price: "23,000",
+          unit: "Single",
+          tags: ["클래식", "버번", "비터", "31%"],
+        },
+        {
+          name: "깔루아 밀크",
+          eng: "Kahlua Milk",
+          category: "칵테일",
+          price: "20,000",
+          unit: "Single",
+          tags: ["클래식", "커피리큐르", "우유", "4%"],
+        },
+        {
+          name: "프렌치 커넥션",
+          eng: "French Connection",
+          category: "칵테일",
+          price: "23,000",
+          unit: "Single",
+          tags: ["클래식", "브랜디", "아마레또", "33%"],
+        },
+        {
+          name: "러스티 네일",
+          eng: "Rusty Nail",
+          category: "칵테일",
+          price: "21,000",
+          unit: "Single",
+          tags: ["클래식", "스카치", "드람뷔", "35%"],
+        },
+        {
+          name: "김렛",
+          eng: "Gimlet",
+          category: "칵테일",
+          price: "19,000",
+          unit: "Single",
+          tags: ["클래식", "진", "라임", "21%"],
+        },
+        {
+          name: "다이키리",
+          eng: "Daiquiri",
+          category: "칵테일",
+          price: "19,000",
+          unit: "Single",
+          tags: ["클래식", "럼", "라임", "21%"],
+        },
+        {
+          name: "마가리타",
+          eng: "Margarita",
+          category: "칵테일",
+          price: "20,000",
+          unit: "Single",
+          tags: ["클래식", "데킬라", "라임", "24%"],
+        },
+        {
+          name: "코스모폴리탄",
+          eng: "Cosmopolitan",
+          category: "칵테일",
+          price: "20,000",
+          unit: "Single",
+          tags: ["클래식", "보드카", "크랜베리", "16%"],
+        },
+        {
+          name: "마티니",
+          eng: "Martini",
+          category: "칵테일",
+          price: "23,000",
+          unit: "Single",
+          tags: ["클래식", "진", "베르무트", "35%"],
+        },
+        {
+          name: "사이드카",
+          eng: "Sidecar",
+          category: "칵테일",
+          price: "25,000",
+          unit: "Single",
+          tags: ["클래식", "브랜디", "레몬", "25%"],
+        },
+        {
+          name: "위스키 사워",
+          eng: "Whisky Sour",
+          category: "칵테일",
+          price: "25,000",
+          unit: "Single",
+          tags: ["클래식", "버번", "계란흰자", "19%"],
+        },
+        {
+          name: "아마레또 사워",
+          eng: "Amaretto Sour",
+          category: "칵테일",
+          price: "25,000",
+          unit: "Single",
+          tags: ["클래식", "아마레또", "계란흰자", "14%"],
+        },
+        {
+          name: "맨해튼",
+          eng: "Manhattan",
+          category: "칵테일",
+          price: "24,000",
+          unit: "Single",
+          tags: ["클래식", "라이", "28%"],
+        },
+        {
+          name: "롱 아일랜드 아이스 티",
+          eng: "Long Island Iced Tea",
+          category: "칵테일",
+          price: "23,000",
+          unit: "Single",
+          tags: ["클래식", "럼", "진", "보드카", "9%"],
+        },
+        {
+          name: "모스코 뮬",
+          eng: "Moscow Mule",
+          category: "칵테일",
+          price: "23,000",
+          unit: "Single",
+          tags: ["클래식", "보드카", "진저비어", "7%"],
+        },
+        {
+          name: "모히또",
+          eng: "Mojito",
+          category: "칵테일",
+          price: "23,000",
+          unit: "Single",
+          tags: ["클래식", "럼", "민트", "6%"],
+        },
+        {
+          name: "스푸모니",
+          eng: "Spumoni",
+          category: "칵테일",
+          price: "19,000",
+          unit: "Single",
+          tags: ["클래식", "캄파리", "자몽", "2%"],
+        },
+        {
+          name: "싱가폴슬링",
+          eng: "Singapore Sling",
+          category: "칵테일",
+          price: "22,000",
+          unit: "Single",
+          tags: ["클래식", "진", "체리", "6%"],
+        },
+        {
+          name: "위스키 소다 (하이볼)",
+          eng: "Whisky Highball",
+          category: "칵테일",
+          price: "18,000",
+          unit: "Single",
+          tags: ["클래식", "위스키", "소다", "7%"],
+        },
+        {
+          name: "잭콕",
+          eng: "Jack & Coke",
+          category: "칵테일",
+          price: "18,000",
+          unit: "Single",
+          tags: ["클래식", "잭다니엘", "콜라", "7%"],
+        },
+        {
+          name: "진토닉",
+          eng: "Gin & Tonic",
+          category: "칵테일",
+          price: "18,000",
+          unit: "Single",
+          tags: ["클래식", "진", "토닉", "7%"],
+        },
+        {
+          name: "진피즈",
+          eng: "Gin Fizz",
+          category: "칵테일",
+          price: "19,000",
+          unit: "Single",
+          tags: ["클래식", "진", "레몬", "10%"],
+        },
+        {
+          name: "차이나 블루",
+          eng: "China Blue",
+          category: "칵테일",
+          price: "19,000",
+          unit: "Single",
+          tags: ["클래식", "리치", "자몽", "3%"],
+        },
+        {
+          name: "팔로마",
+          eng: "Paloma",
+          category: "칵테일",
+          price: "20,000",
+          unit: "Single",
+          tags: ["클래식", "데킬라", "자몽", "5%"],
+        },
+        {
+          name: "논알콜 모히또",
+          eng: "Non-Mojito",
+          category: "칵테일",
+          price: "21,000",
+          unit: "Single",
+          tags: ["논알콜", "민트", "0%"],
+        },
+        {
+          name: "블루 레몬에이드",
+          eng: "Blue Lemonade",
+          category: "칵테일",
+          price: "18,000",
+          unit: "Single",
+          tags: ["논알콜", "레몬", "0%"],
+        },
+        {
+          name: "셜리템플",
+          eng: "Shirley Temple",
+          category: "칵테일",
+          price: "18,000",
+          unit: "Single",
+          tags: ["논알콜", "석류", "0%"],
+        },
+
+        {
+          name: "아이스크림 (바닐라 & 말차)",
+          eng: "Ice Cream (Vanilla & Matcha)",
+          category: "안주",
+          price: "10,000",
+          unit: "Food",
+          tags: ["디저트"],
+        },
+        {
+          name: "바질 페스토 올리브 크림치즈 & 크래커",
+          eng: "Basil Pesto & Olive Cream Cheese with Crackers",
+          category: "안주",
+          price: "20,000",
+          unit: "Food",
+          tags: ["치즈"],
+        },
+        {
+          name: "크래커 추가",
+          eng: "Add Crackers",
+          category: "안주",
+          price: "1,000",
+          unit: "Food",
+          tags: ["추가메뉴"],
+        },
+        {
+          name: "호두 곶감 말이",
+          eng: "Dried Persimmons Walnut Rolls",
+          category: "안주",
+          price: "25,000",
+          unit: "Food",
+          tags: ["전통", "견과류"],
+        },
+        {
+          name: "스낵 플래터",
+          eng: "Snack Platter",
+          category: "안주",
+          price: "20,000",
+          unit: "Food",
+          tags: ["스낵", "모듬"],
+        },
+        {
+          name: "육포",
+          eng: "Beef Jerky",
+          category: "안주",
+          price: "30,000",
+          unit: "Food",
+          tags: ["마른안주"],
+        },
+        {
+          name: "한치 & 땅콩",
+          eng: "Grilled Squid & Peanuts",
+          category: "안주",
+          price: "30,000",
+          unit: "Food",
+          tags: ["마른안주", "해산물"],
+        },
+        {
+          name: "황도",
+          eng: "Yellow Peaches",
+          category: "안주",
+          price: "25,000",
+          unit: "Food",
+          tags: ["과일"],
+        },
+        {
+          name: "과일 플래터",
+          eng: "Seasonal Fruit Platter",
+          category: "안주",
+          price: "35,000",
+          unit: "Food",
+          tags: ["과일", "모듬"],
+        },
+        {
+          name: "과일 플래터 (사이즈 업)",
+          eng: "Fruit Platter (Size Up)",
+          category: "안주",
+          price: "10,000",
+          unit: "Food",
+          tags: ["추가메뉴"],
+        },
+        {
+          name: "치즈 플래터",
+          eng: "Cheese Platter",
+          category: "안주",
+          price: "35,000",
+          unit: "Food",
+          tags: ["치즈", "모듬"],
+        },
+        {
+          name: "치즈 플래터 (사이즈 업)",
+          eng: "Cheese Platter (Size Up)",
+          category: "안주",
+          price: "10,000",
+          unit: "Food",
+          tags: ["추가메뉴"],
+        },
+      ];
+
+      const menuData = rawMenuData.map((item, index) => ({
+        ...item,
+        id: "menu_" + index,
+      }));
+
+      let currentCategory = "all";
+      let activeUnits = [];
+      let cart = [];
+
+      function parsePrice(priceStr) {
+        return parseInt(priceStr.replace(/,/g, ""), 10);
+      }
+
+      function renderMenu(items) {
+        const menuList = document.getElementById("menuList");
+        menuList.innerHTML = "";
+
+        if (items.length === 0) {
+          menuList.innerHTML =
+            '<div class="text-center text-muted mt-5">해당 조건의 메뉴가 없습니다.</div>';
+          return;
+        }
+
+        items.forEach((item) => {
+          const tagsHtml = item.tags
+            .map(
+              (tag) =>
+                `<span class="badge bg-body-secondary text-body-secondary tag-badge">#${tag}</span>`,
+            )
+            .join("");
+
+          const itemUnits = Array.isArray(item.unit) ? item.unit : [item.unit];
+          const displayUnits = itemUnits.map((u) => {
+            if (u === "Single") return "Single/단품";
+            if (u === "Bottle") return "Bottle";
+            if (u === "Set") return "Set (세트)";
+            if (u === "Food") return "Food";
+            return u;
+          });
+          const unitBadgeText = displayUnits.join(" / ");
+
+          const card = document.createElement("div");
+          card.className = "card menu-card";
+          card.innerHTML = `
+                <div class="card-body d-flex justify-content-between align-items-center p-3">
+                    <div class="pe-2">
+                        <h6 class="card-title mb-1 fw-bold">${item.name}</h6>
+                        <div class="text-muted mb-2" style="font-size: 0.75rem;">${item.eng}</div>
+                        <div>${tagsHtml}</div>
+                    </div>
+                    <div class="text-end flex-shrink-0 d-flex flex-column align-items-end">
+                        <div class="badge text-bg-primary price-badge mb-1">₩${item.price}</div>
+                        <div class="unit-badge mb-2">${unitBadgeText}</div>
+                        <button class="btn btn-sm btn-outline-primary" style="font-size:0.8rem;" onclick="addToCart('${item.id}')">담기 +</button>
+                    </div>
+                </div>
+            `;
+          menuList.appendChild(card);
+        });
+      }
+
+      function addToCart(id) {
+        const existing = cart.find((i) => i.id === id);
+        if (existing) existing.quantity++;
+        else cart.push({ id: id, quantity: 1 });
+
+        updateCartUI();
+        if (navigator.vibrate) navigator.vibrate(50);
+      }
+
+      function updateQuantity(id, delta) {
+        const item = cart.find((i) => i.id === id);
+        if (item) {
+          item.quantity += delta;
+          if (item.quantity <= 0) cart = cart.filter((i) => i.id !== id);
+        }
+        updateCartUI();
+      }
+
+      function clearCart() {
+        if (confirm("계산기를 초기화하시겠습니까?")) {
+          cart = [];
+          updateCartUI();
+        }
+      }
+
+      function updateCartUI() {
+        const cartItemsEl = document.getElementById("cartItems");
+        const cartTotalBadge = document.getElementById("cartTotalBadge");
+        const cartTotalEl = document.getElementById("cartTotal");
+
+        cartItemsEl.innerHTML = "";
+        let totalAmount = 0;
+        let totalCount = 0;
+
+        if (cart.length === 0) {
+          cartItemsEl.innerHTML =
+            '<div class="text-center text-muted mt-5 pt-4">아직 담은 메뉴가 없습니다.</div>';
+        } else {
+          cart.forEach((cartItem) => {
+            const menu = menuData.find((m) => m.id === cartItem.id);
+            const priceNum = parsePrice(menu.price);
+            const itemTotal = priceNum * cartItem.quantity;
+
+            totalAmount += itemTotal;
+            totalCount += cartItem.quantity;
+
+            const unitDisplay = Array.isArray(menu.unit)
+              ? menu.unit.join("/")
+              : menu.unit;
+
+            cartItemsEl.innerHTML += `
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary-subtle">
+                        <div class="pe-2" style="flex: 1;">
+                            <div class="fw-bold fs-6">${menu.name}</div>
+                            <div class="text-muted small">${unitDisplay} | ₩${menu.price}</div>
+                        </div>
+                        <div class="d-flex align-items-center mx-3 bg-body-secondary rounded-pill px-1">
+                            <button class="btn btn-sm btn-link text-body text-decoration-none px-2 fs-5" onclick="updateQuantity('${menu.id}', -1)">-</button>
+                            <span class="fw-bold mx-1" style="min-width: 20px; text-align: center;">${cartItem.quantity}</span>
+                            <button class="btn btn-sm btn-link text-body text-decoration-none px-2 fs-5" onclick="updateQuantity('${menu.id}', 1)">+</button>
+                        </div>
+                        <div class="text-end fw-bold text-primary fs-6" style="min-width: 80px;">
+                            ₩${itemTotal.toLocaleString()}
+                        </div>
+                    </div>
+                `;
+          });
+        }
+
+        if (totalCount > 0) {
+          cartTotalBadge.innerText = `₩${totalAmount.toLocaleString()}`;
+          cartTotalBadge.classList.replace("bg-secondary", "bg-danger");
+        } else {
+          cartTotalBadge.innerText = "₩0";
+          cartTotalBadge.classList.replace("bg-danger", "bg-secondary");
+        }
+        cartTotalEl.innerText = `₩${totalAmount.toLocaleString()}`;
+      }
+
+      function filterMenu() {
+        const keyword = document
+          .getElementById("searchInput")
+          .value.toLowerCase()
+          .replace(/\s/g, "");
+        const filtered = menuData.filter((item) => {
+          const categoryMatch =
+            currentCategory === "all" || item.category === currentCategory;
+
+          const unitMatch =
+            activeUnits.length === 0 ||
+            (Array.isArray(item.unit)
+              ? item.unit.some((u) => activeUnits.includes(u))
+              : activeUnits.includes(item.unit));
+
+          const nameMatch = item.name
+            .toLowerCase()
+            .replace(/\s/g, "")
+            .includes(keyword);
+          const engMatch = item.eng
+            .toLowerCase()
+            .replace(/\s/g, "")
+            .includes(keyword);
+          const tagMatch = item.tags.some((tag) =>
+            tag.toLowerCase().replace(/\s/g, "").includes(keyword),
+          );
+
+          const nameChosung = getChosung(item.name);
+          const chosungMatch = nameChosung.includes(keyword);
+
+          const searchMatch =
+            keyword === "" || nameMatch || engMatch || tagMatch || chosungMatch;
+
+          return categoryMatch && unitMatch && searchMatch;
+        });
+        renderMenu(filtered);
+      }
+
+      // 카테고리 단일 선택 버튼 이벤트
+      document.querySelectorAll("#categoryContainer button").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          document
+            .querySelectorAll("#categoryContainer button")
+            .forEach((b) => {
+              b.classList.remove("btn-primary", "btn-danger", "active");
+              b.classList.add(
+                b.getAttribute("data-category") === "이벤트"
+                  ? "btn-outline-danger"
+                  : "btn-outline-primary",
+              );
+            });
+          e.target.classList.remove(
+            "btn-outline-primary",
+            "btn-outline-danger",
+          );
+          e.target.classList.add(
+            e.target.getAttribute("data-category") === "이벤트"
+              ? "btn-danger"
+              : "btn-primary",
+            "active",
+          );
+
+          currentCategory = e.target.getAttribute("data-category");
+          filterMenu();
+        });
+      });
+
+      // 단위 필터 이벤트 (토글 방식, 전체 형태 삭제 적용)
+      document.querySelectorAll("#unitContainer button").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const clickedUnit = e.target.getAttribute("data-unit");
+
+          if (activeUnits.includes(clickedUnit)) {
+            activeUnits = activeUnits.filter((u) => u !== clickedUnit);
+          } else {
+            activeUnits.push(clickedUnit);
+          }
+
+          document.querySelectorAll("#unitContainer button").forEach((b) => {
+            const btnUnit = b.getAttribute("data-unit");
+
+            if (activeUnits.includes(btnUnit)) {
+              b.classList.replace("btn-outline-secondary", "btn-secondary");
+              b.classList.add("active");
+            } else {
+              b.classList.replace("btn-secondary", "btn-outline-secondary");
+              b.classList.remove("active");
+            }
+          });
+
+          filterMenu();
+        });
+      });
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", filterMenu);
+      document
+        .getElementById("searchInput")
+        .addEventListener("focus", () => window.scrollTo(0, 0));
+
+      // 초기 화면 렌더링
+      renderMenu(menuData);
+      updateCartUI();
+    </script>
+  </body>
+</html>
